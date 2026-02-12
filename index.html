@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucas Mangroelal | Design & Code</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent: #0071e3;
+            --card-bg: #f5f5f7;
+            --card-border: rgba(0,0,0,0.04);
+            --status-red: #ff3b30;
+            --tag-new: #34c759;
+            --tag-popular: #af52de;
+            --tag-updated: #ff9500;
+            --tag-category: #5e5e62;
+            --tag-private: #1d1d1f;
+            --ease-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #000000;
+                --text-primary: #f5f5f7;
+                --text-secondary: #86868b;
+                --accent: #2997ff;
+                --card-bg: #1c1c1e;
+                --card-border: rgba(255,255,255,0.08);
+                --tag-private: #f5f5f7;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* --- Intro Scroll Animatie --- */
+        #intro-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s var(--ease-apple);
+        }
+
+        .intro-container {
+            height: 80px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .intro-scroller {
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .intro-word {
+            height: 80px;
+            color: white;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: -0.02em;
+            padding: 0 20px;
+        }
+
+        /* --- Navigatie --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(var(--bg), 0.7);
+            backdrop-filter: saturate(180%) blur(20px);
+            z-index: 100;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .nav-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a, .nav-links button {
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            font-family: inherit;
+        }
+        .nav-links a:hover, .nav-links button:hover { color: var(--accent); }
+
+        .btn-status {
+            background: var(--accent) !important;
+            color: #fff !important;
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.8rem !important;
+        }
+
+        /* --- Badges & Tags --- */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.04em;
+        }
+        .badge-new { background: rgba(52, 199, 89, 0.12); color: var(--tag-new); }
+        .badge-popular { background: rgba(175, 82, 222, 0.12); color: var(--tag-popular); }
+        .badge-updated { background: rgba(255, 149, 0, 0.12); color: var(--tag-updated); }
+        .badge-category { background: rgba(142, 142, 147, 0.12); color: var(--tag-category); }
+        .badge-private { background: rgba(0, 0, 0, 0.05); color: var(--tag-private); border: 1px solid rgba(0,0,0,0.1); }
+        .badge-error { background: rgba(255, 59, 48, 0.1); color: var(--status-red); }
+
+        @media (prefers-color-scheme: dark) {
+            .badge-category { background: rgba(255, 255, 255, 0.1); color: #fff; }
+            .badge-private { background: rgba(255, 255, 255, 0.05); border-color: rgba(255,255,255,0.1); }
+        }
+
+        /* --- Hero --- */
+        .hero {
+            padding: 180px 20px 100px;
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 5rem);
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            margin-bottom: 24px;
+        }
+
+        .hero p {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        /* --- Project Grid --- */
+        main { max-width: 1100px; margin: 0 auto 100px; padding: 0 20px; }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
+        }
+        
+        .section-header h2 { font-size: 2.2rem; font-weight: 600; letter-spacing: -0.03em; }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 28px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 44px;
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.4s var(--ease-apple), box-shadow 0.4s var(--ease-apple);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: scale(1.015);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.06);
+        }
+
+        .card-icon {
+            width: 52px; height: 52px;
+            background: var(--bg);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 24px;
+            color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .card h3 { font-size: 1.9rem; font-weight: 600; margin-bottom: 12px; letter-spacing: -0.02em; }
+        .card p { color: var(--text-secondary); margin-bottom: 30px; font-size: 1.05rem; flex-grow: 1; }
+
+        .card-cta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 1rem;
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg);
+            width: 100%;
+            max-width: 750px;
+            max-height: 85vh;
+            border-radius: 36px;
+            padding: 60px;
+            position: relative;
+            overflow-y: auto;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.5s var(--ease-apple);
+        }
+
+        .modal-overlay.active { display: flex; }
+        .modal-overlay.active .modal-content { transform: translateY(0); opacity: 1; }
+
+        .close-modal {
+            position: absolute;
+            top: 30px; right: 30px;
+            background: var(--card-bg);
+            border: none;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s;
+        }
+        .close-modal:hover { transform: scale(1.1); }
+
+        .modal-body h2 { font-size: 2.8rem; margin-bottom: 24px; letter-spacing: -0.04em; }
+        .modal-body p { font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .detail-item {
+            padding: 24px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+        }
+
+        .detail-item h4 {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .detail-item p {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+
+        .status-box {
+            margin-top: 20px;
+            padding: 24px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+        }
+        
+        .status-box h4 { margin-bottom: 8px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .status-box.unavailable { border-left: 4px solid var(--status-red); }
+        .status-box.coming-soon { border-left: 4px solid var(--tag-new); }
+        .status-box.private { border-left: 4px solid var(--tag-private); }
+
+        /* --- Scroll Reveal --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s var(--ease-apple);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 600px) {
+            .project-grid { grid-template-columns: 1fr; }
+            .details-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 40px 24px; border-radius: 28px; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Intro Overlay -->
+    <div id="intro-overlay">
+        <div class="intro-container">
+            <div class="intro-scroller" id="intro-scroller">
+                <div class="intro-word">Welkom, ik ben Lucas</div>
+                <div class="intro-word">Welcome, I am Lucas</div>
+                <div class="intro-word">Bienvenue, je suis Lucas</div>
+                <div class="intro-word">Willkommen, ich bin Lucas</div>
+                <div class="intro-word">Lucas Mangroelal</div>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <div class="nav-content">
+            <div class="logo"><i data-lucide="command" size="18"></i> Lucas.</div>
+            <div class="nav-links">
+                <button onclick="openCredits()">Credits</button>
+                <a href="https://lucasmangroelal.nl/portfolio/">Hoofd Portfolio</a>
+                <a href="https://linkedin.com/in/lucas-mangroelal-4b458b348" target="_blank">LinkedIn</a>
+                <a href="https://status.lucasm.xyz" class="btn-status">Systeem Status</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero reveal">
+        <h1>Buitengewoon digitaal.</h1>
+        <p>Grote projecten die de grens verleggen tussen functionaliteit en esthetiek.</p>
+    </header>
+
+    <main>
+        <div class="section-header reveal">
+            <h2>Grote Projecten</h2>
+            <p style="color: var(--text-secondary);">Focus op kwaliteit en resultaat</p>
+        </div>
+
+        <div class="project-grid" id="project-grid">
+            <!-- Dynamisch geladen via JS -->
+        </div>
+    </main>
+
+    <!-- Modal Structure -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-modal" onclick="closeModal()"><i data-lucide="x"></i></button>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * --- TAG CONFIGURATIE ---
+         * Voeg hier eenvoudig nieuwe labels toe die je vaker wilt gebruiken.
+         */
+        const PROJECT_TAGS = {
+            new: { label: 'Nieuw', class: 'badge-new' },
+            popular: { label: 'Populair', class: 'badge-popular' },
+            updated: { label: 'Vernieuwd', class: 'badge-updated' },
+            private: { label: 'Privé', class: 'badge-private' },
+            soon: { label: 'Binnenkort', class: 'badge-new' },
+            maintenance: { label: 'Onderhoud', class: 'badge-error' },
+            // Categorieën
+            webapp: { label: 'Web App', class: 'badge-category' },
+            devtool: { label: 'Dev Tool', class: 'badge-category' },
+            system: { label: 'Systeem', class: 'badge-category' },
+            concept: { label: 'Concept', class: 'badge-category' },
+            internal: { label: 'Interne Tool', class: 'badge-category' }
+        };
+
+        // --- Projecten Data ---
+        // Gebruik de sleutels uit PROJECT_TAGS bij de 'tags' array.
+        const projects = [
+            {
+                id: 'worklog',
+                title: 'WorkLog',
+                period: 'Januari 2024 - Heden',
+                contributors: 'Lucas Mangroelal, D. Janssen (Backend)',
+                description: 'Een naadloze ervaring voor tijdregistratie, volledig geoptimaliseerd voor cloud-native workflows.',
+                longDescription: 'WorkLog is ontworpen om de administratieve last voor freelancers weg te nemen. Het systeem maakt gebruik van slimme algoritmes om werktijden te categoriseren en genereert met één druk op de knop PDF-rapportages voor facturatie.',
+                icon: 'timer',
+                type: 'public',
+                tags: ['popular', 'webapp']
+            },
+            {
+                id: 'toolbox',
+                title: 'Dev Toolbox',
+                period: 'Maart 2023 - Augustus 2024',
+                contributors: 'Lucas Mangroelal (Solo)',
+                description: 'Mijn persoonlijke bibliotheek van scripts en herbruikbare componenten voor snellere development.',
+                longDescription: 'De Dev Toolbox is een groeiende collectie van tools die ik de afgelopen jaren heb ontwikkeld. Het bevat o.a. een custom CSS framework en API helpers.',
+                icon: 'box',
+                type: 'public',
+                tags: ['new', 'devtool']
+            },
+            {
+                id: 'alpha',
+                title: 'Project Alpha',
+                period: 'Oktober 2022 - December 2023',
+                contributors: 'L. Mangroelal, Team Core-UI',
+                description: 'Een schaalbaar headless CMS systeem dat dient als het fundament voor al mijn dynamische applicaties.',
+                longDescription: 'Project Alpha is een robuust CMS dat de focus legt op performance en SEO. De architectuur is volledig modulair.',
+                icon: 'history',
+                type: 'public',
+                tags: ['updated', 'system']
+            },
+            {
+                id: 'private-vault',
+                title: 'Secret Vault',
+                period: 'Februari 2025 - Heden',
+                contributors: 'Lucas Mangroelal (Lead), Security Team X',
+                description: 'Een intern beveiligingsprotocol voor data-encryptie en opslag.',
+                longDescription: 'Dit project omvat de architectuur voor end-to-end encryptie binnen interne bedrijfsnetwerken.',
+                statusMessage: 'Dit project is momenteel privé vanwege een NDA (Non-Disclosure Agreement) en bevat gevoelige bedrijfsinformatie.',
+                icon: 'lock',
+                type: 'private',
+                tags: ['private', 'internal']
+            },
+            {
+                id: 'future-vision',
+                title: 'NextGen AI',
+                period: 'Verwacht Q4 2025',
+                contributors: 'Lucas Mangroelal, AI Lab Partners',
+                description: 'Een visie op de toekomst van AI-gebaseerde interface design.',
+                longDescription: 'Een experimenteel platform waarbij de UI zich in real-time aanpast aan de intentie van de gebruiker middels Large Language Models.',
+                statusMessage: 'Dit project bevindt zich momenteel in de conceptfase. De eerste bèta-release wordt verwacht in het najaar van 2025.',
+                icon: 'sparkles',
+                type: 'coming_soon',
+                tags: ['soon', 'concept']
+            }
+        ];
+
+        /**
+         * Hulpmiddel om de tag HTML te genereren op basis van de keys in de project data.
+         */
+        function getTagsHTML(tagKeys) {
+            return tagKeys.map(key => {
+                const tag = PROJECT_TAGS[key];
+                if (!tag) return '';
+                return `<span class="badge ${tag.class}">${tag.label}</span>`;
+            }).join('');
+        }
+
+        // --- Renderen ---
+        function renderProjects() {
+            const grid = document.getElementById('project-grid');
+            grid.innerHTML = projects.map(p => `
+                <div class="card reveal" onclick="openModal('${p.id}')">
+                    <div class="tag-container">
+                        ${getTagsHTML(p.tags)}
+                    </div>
+                    <div class="card-icon"><i data-lucide="${p.icon}"></i></div>
+                    <h3>${p.title}</h3>
+                    <p>${p.description}</p>
+                    <div class="card-cta">Details bekijken <i data-lucide="chevron-right" size="18"></i></div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // --- Modal Logica ---
+        function openModal(id) {
+            const p = projects.find(proj => proj.id === id);
+            if(!p) return;
+
+            let statusHTML = '';
+            if(p.type === 'private') {
+                statusHTML = `<div class="status-box private"><h4><i data-lucide="lock" size="18"></i> Vertrouwelijk</h4><p>${p.statusMessage}</p></div>`;
+            } else if (p.type === 'coming_soon') {
+                statusHTML = `<div class="status-box coming-soon"><h4><i data-lucide="calendar" size="18"></i> Binnenkort beschikbaar</h4><p>${p.statusMessage}</p></div>`;
+            } else if (p.type === 'maintenance') {
+                statusHTML = `<div class="status-box unavailable"><h4><i data-lucide="alert-circle" size="18"></i> Tijdelijk Offline</h4><p>${p.statusMessage}</p></div>`;
+            }
+
+            document.getElementById('modal-body').innerHTML = `
+                <div class="tag-container">
+                    ${getTagsHTML(p.tags)}
+                </div>
+                <h2>${p.title}</h2>
+                <p>${p.longDescription || p.description}</p>
+                
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <h4>Periode</h4>
+                        <p>${p.period}</p>
+                    </div>
+                    <div class="detail-item">
+                        <h4>Bijdragers</h4>
+                        <p>${p.contributors}</p>
+                    </div>
+                </div>
+
+                ${statusHTML}
+            `;
+            document.getElementById('modal-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function openCredits() {
+            document.getElementById('modal-body').innerHTML = `
+                <h2>Site Credits</h2>
+                <p>Deze portfolio-interface is ontworpen met de focus op minimalistische esthetiek en gebruiksvriendelijkheid.</p>
+                
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <h4>Design & Ontwikkeling</h4>
+                        <p>Lucas Mangroelal</p>
+                    </div>
+                    <div class="detail-item">
+                        <h4>Technologie</h4>
+                        <p>HTML5, CSS3, JavaScript (Vanilla)</p>
+                    </div>
+                    <div class="detail-item">
+                        <h4>Iconografie</h4>
+                        <p>Lucide Icons</p>
+                    </div>
+                    <div class="detail-item">
+                        <h4>Typografie</h4>
+                        <p>Inter (Google Fonts)</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
+                    &copy; 2026 Lucas Mangroelal. Alle rechten voorbehouden.
+                </div>
+            `;
+            document.getElementById('modal-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // --- Intro Animatie ---
+        function runIntro() {
+            const scroller = document.getElementById('intro-scroller');
+            const total = 5;
+            let current = 0;
+            const interval = setInterval(() => {
+                current++;
+                if (current < total) {
+                    scroller.style.transform = `translateY(-${current * 80}px)`;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('intro-overlay').style.opacity = '0';
+                        setTimeout(() => document.getElementById('intro-overlay').remove(), 1000);
+                    }, 500);
+                }
+            }, 800);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+
+        window.onload = () => { renderProjects(); runIntro(); };
+    </script>
+</body>
+</html>
